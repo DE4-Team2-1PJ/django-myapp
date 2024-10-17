@@ -8,6 +8,9 @@ import matplotlib
 import matplotlib.colors as mcolors
 matplotlib.use('Agg')  # GUI 창을 띄우지 않도록 설정
 from .you_data_processing import make_df
+from django.conf import settings
+import json
+import os
 
 # 운영 체제에 맞는 폰트 설정 (Mac, Windows, Linux)
 import platform
@@ -22,7 +25,6 @@ elif os == 'Linux':
 else:
     print(f'{os} is not set')
 
-font_path = '/Users/youyoungcheon/Desktop/visual/django-myapp/NanumGothic.ttf'
 
 def generate_wordcloud():
     df = make_df()
