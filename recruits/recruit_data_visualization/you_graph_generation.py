@@ -29,11 +29,10 @@ else:
 def generate_wordcloud():
     df = make_df()
     category_stack = df.groupby('category_name')['stack'].apply(lambda x: ' '.join([str(i) if i is not None else '' for i in x]))
-
     # 워드클라우드 생성 및 이미지로 변환
     wordcloud_images = {}
     for category, stack_words in category_stack.items():
-        wordcloud = WordCloud(width=800, height=400, background_color='white', font_path = font_path).generate(stack_words)
+        wordcloud = WordCloud(width=800, height=400, background_color='white', font_path = 'C:/Users/ekrhk/OneDrive/바탕 화면/Project/django-myapp/recruits/static/assets/NanumGothic.ttf').generate(stack_words)
         buffer = io.BytesIO()
         plt.figure(figsize=(8, 4))
         plt.imshow(wordcloud, interpolation='bilinear')
