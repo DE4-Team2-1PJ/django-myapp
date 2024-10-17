@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Graph Detail Page</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   </head>
   <body>
     <div class="dashboard">
@@ -20,7 +21,19 @@
           <h2>Visualized Data</h2>
           <!-- grid 로 구성예정-->
           <div class="graph-wrapper">
-            <div class="graph" id="graph"></div>
+            <div class="graph" id="graph-platform">
+              {{ graph_platform|safe }}
+            </div>
+          </div>
+          <div class="graph-wrapper">
+            <div class="graph" id="graph-category">
+              {{ graph_category|safe }}
+            </div>
+          </div>
+          <div class="graph-wrapper">
+            <div class="graph" id="graph-choropleth">
+              {{ graph_choropleth|safe }}
+            </div>
           </div>
         </section>
       </main>

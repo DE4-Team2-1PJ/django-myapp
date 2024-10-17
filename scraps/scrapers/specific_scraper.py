@@ -1,9 +1,11 @@
-import datetime
 from .base_scraper import BaseScraper
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+import time
+import re
+from datetime import datetime
 
 class TheteamsScraper(BaseScraper):
     def __init__(self):
@@ -95,68 +97,99 @@ class SurfitScraper(BaseScraper):
         self.request_save(data)
         pass
 
-class SaraminScraper(BaseScraper):
+
+class IncruitScraper(BaseScraper):
     def __init__(self):
         super().__init__()
-        self.search_querys = ["데이터분석", "데이터 엔지니어", "데이터 사이언티스트"] 
-        self.keyword_index = 0   
-    
-    def parse_end_date(self, date_text):
-        if "오늘마감" in date_text:
-            return datetime.datetime.now().strftime("%Y-%m-%d")
-        if "내일마감" in date_text:
-            return (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-        if date_text.startswith("~ "):
-            date_text = date_text[2:]
-            try:
-                current_year = datetime.datetime.now().year
-                date_obj = datetime.datetime.strptime(f"{current_year}/{date_text[:5]}", "%Y/%m/%d")
-                return date_obj.strftime("%Y-%m-%d")
-            except ValueError:
-                pass
-        return date_text
+        self.all_jobs = []
+
+    # 지역명 정리
+    def clean_region_name(self, region):
+        cleaned_region = re.sub(r'\s외.*$', '', region)
+        return cleaned_region
+
+    # 경력 정리
+    def clean_career(self, career):
+        if '신입' in career:
+            return '신입'
+        return career
+
+    # 마감일 변환
+    def convert_end_date(self, end_date):
+        today = datetime.now()
+
+        # "23시 마감" 형식 처리
+        if "마감" in end_date:
+            return today.strftime('%Y-%m-%d')
+
+        # "~10.21 (월)" 형식 처리
+        match = re.search(r'~(\d{1,2})\.(\d{1,2})', end_date)
+        if match:
+            month = int(match.group(1))
+            day = int(match.group(2))
+            return today.replace(month=month, day=day).strftime('%Y-%m-%d')
+
+        # 다른 형식은 그대로 반환
+        return end_date
     
     def scrap(self):
-        with webdriver.Chrome(service=Service(ChromeDriverManager(driver_version="129.0.6668.89").install())) as driver:
-            for page in range(200):
-                current_keyword = self.search_querys[self.keyword_index]
-                url = ('https://www.saramin.co.kr/zf_user/search/recruit?search_area=main&search_done=y&search_optional_item=n'
-                       f'&searchType=search&searchword={current_keyword}&recruitPage={page + 1}&recruitSort=relation&recruitPageCount=40')
-                driver.get(url)
+        with webdriver.Chrome(service=Service(ChromeDriverManager().install())) as driver:
+            url = 'https://job.incruit.com/jobdb_list/searchjob.asp?occ3=16935&occ3=16501&occ3=16182&occ3=14780&occ3=17030&occ3=16895&occ3=16865&occ3=16761&occ3=16903&occ2=632&page=1'
+            driver.get(url)
+            time.sleep(3)
+            page_num = 1  # 페이지 번호를 추적하기 위한 변수 추가
+            while True:
+                print(f"현재 {page_num} 페이지 크롤링 중입니다.")
+                jobs = driver.find_elements(By.CLASS_NAME, 'c_col')
 
-                job_elements = driver.find_elements(By.CLASS_NAME, "item_recruit")
-                if not job_elements:
-                    print("No more jobs found.")
-                    break
-
-                for job in job_elements:
+                for job in jobs:
                     try:
-                        title_element = job.find_element(By.CSS_SELECTOR, "a").get_attribute("title")
-                        title = title_element.strip() if title_element is not None else "No Title"
-                        company_name = job.find_element(By.CSS_SELECTOR, "div.area_corp > strong > a").text.strip()
-                        href = job.find_element(By.CSS_SELECTOR, "a").get_attribute("href")
-                        detail_url = "https://www.saramin.co.kr" + href if href is not None else "No URL"
-                        org_end_date = job.find_element(By.CSS_SELECTOR, "div.job_date span.date").text
-                        end_date = self.parse_end_date(org_end_date)
-                        stack = [a.text.strip() for a in job.find_elements(By.CSS_SELECTOR, "div.job_sector > a")]
-                        region = job.find_element(By.CSS_SELECTOR, "div.job_condition > span > a").text.strip()
-                        career = job.find_element(By.CSS_SELECTOR, "div.job_condition > span:nth-child(2)").text.strip()
+                        company_name = job.find_element(By.CLASS_NAME, 'cell_first').find_element(By.TAG_NAME, 'a').text
+                        mid = job.find_element(By.CLASS_NAME, 'cell_mid')
+                        title = mid.find_element(By.TAG_NAME, 'a').text
+                        detail_url = mid.find_element(By.TAG_NAME, 'a').get_attribute('href')
+                        spans = mid.find_elements(By.TAG_NAME, 'span')
 
-                        # Data dictionary to save
-                        data = {
+                        filtered_spans = [span for span in spans if 'highlight' not in span.get_attribute('class')]
+
+                        if len(filtered_spans) > 2:
+                            region = filtered_spans[2].text
+                        else:
+                            region = ""
+                        if len(filtered_spans) > 0:
+                            career = filtered_spans[0].text
+                        else:
+                            career = ""
+                        end_date = job.find_element(By.CLASS_NAME, 'cell_last').find_element(By.CLASS_NAME, 'cl_btm').find_element(By.TAG_NAME, 'span').text
+
+                        job_info = {
                             "title": title,
                             "company_name": company_name,
                             "detail_url": detail_url,
-                            "end_date": end_date,
-                            "platform_name": "saramin",
-                            "category_name": current_keyword,
-                            "stack": stack,
-                            "region": region,
-                            "career": career,
+                            "end_date": self.convert_end_date(end_date),
+                            "platform_name": "incruit",
+                            "category_name": "",  
+                            "stack": "",  
+                            "region": self.clean_region_name(region),
+                            "career": self.clean_career(career)
                         }
-                        # Send data to the server
-                        self.request_save(data)
+
+                        print(job_info)
+                        self.request_save(job_info)
+
                     except Exception as e:
                         print(f"Error extracting job data: {e}")
+                
+                try:
+                    next_button = driver.find_element(By.CLASS_NAME, 'next_n')
+                    if "disabled" in next_button.get_attribute("class"):
+                        print("마지막 페이지입니다. 크롤링을 종료합니다.")
+                        break
 
-                self.keyword_index = (self.keyword_index + 1) % len(self.search_querys)
+                    print(f"{page_num} 페이지에서 다음 페이지로 이동 중입니다.")
+                    driver.execute_script("arguments[0].click();", next_button)
+                    time.sleep(3)
+                    page_num += 1
+                except Exception as e:
+                    print(f"페이지 이동 중 오류 발생: {e}")
+                    break
