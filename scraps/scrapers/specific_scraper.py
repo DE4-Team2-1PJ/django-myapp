@@ -12,7 +12,7 @@ class TheteamsScraper(BaseScraper):
         super().__init__()
         self.search_querys = ['데이터', '백엔드']
 
-    def scrap(self):
+    # def scrap(self):
         search_querys = self.search_querys
         # data_list = []
         with webdriver.Chrome(service=Service(ChromeDriverManager().install())) as driver:  
@@ -81,6 +81,7 @@ class TheteamsScraper(BaseScraper):
 6. driver를 이용하실 땐  
 ' with webdriver.Chrome(service=Service(ChromeDriverManager().install())) as driver ' 를 이용해서 브라우저가 종료될 수 있도록 해주세요.
 7. 코드를 다 작성하셨다면 scrapers > apps.py 파일에 들어가셔서 주석을 확인해주세요.
+
 '''
 class SurfitScraper(BaseScraper):
     def __init__(self):
