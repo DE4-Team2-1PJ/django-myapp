@@ -14,14 +14,14 @@ class ScrapsConfig(AppConfig):
 
     #when django start, it starts too.
     def ready(self):
-        from scraps.scrapers.specific_scraper import TheteamsScraper, SaraminScraper, IncruitScraper
+        from scraps.scrapers.specific_scraper import TheteamsScraper, IncruitScraper
         #스크래퍼 인스턴스 생성
-        theTeamScraper = TheteamsScraper()
-        # 60초마다 scrap 메서드 실행 #test10초
-        theTeamScraper.start_scraper_scheduler(interval_seconds=10)
+        # theTeamScraper = TheteamsScraper()
+        # # 60초마다 scrap 메서드 실행 #test10초
+        # theTeamScraper.start_scraper_scheduler(interval_seconds=10)
         
-        saraminScraper = SaraminScraper()
-        saraminScraper.start_scraper_scheduler(interval_seconds=30)
+        # saraminScraper = SaraminScraper()
+        # saraminScraper.start_scraper_scheduler(interval_seconds=30)
 
         incruitScraper = IncruitScraper()
         incruitScraper.start_scraper_scheduler(interval_seconds=10)

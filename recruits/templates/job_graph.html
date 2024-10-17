@@ -1,10 +1,5 @@
 <!DOCTYPE html>
 {% load static %}
-
-
-
-
-
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -26,18 +21,13 @@
           <h2>Visualized Data</h2>
           <!-- grid 로 구성예정-->
           <div class="graph-wrapper">
-            <div class="graph" id="graph-platform">
-              {{ graph_platform|safe }}
-            </div>
-          </div>
-          <div class="graph-wrapper">
-            <div class="graph" id="graph-category">
-              {{ graph_category|safe }}
+            <div class="graph" id="graph-platform-category">
+              {{ line_plot_html|safe }}
             </div>
           </div>
           <div class="graph-wrapper">
             <div class="graph" id="graph-choropleth">
-              {{ graph_choropleth|safe }}
+              {{ choropleth_html|safe }}
             </div>
           </div>
         </section>
