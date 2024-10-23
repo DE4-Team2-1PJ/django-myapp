@@ -8,7 +8,7 @@ Web Scraping 을 활용하여 "데이터 직무 채용공고 통합 서비스"�
 
 # ⏲️ 개발 기간
 ---
-2024.10.14(월) ~ 2024.10.17(목)
+2024.10.14(월) ~ 2024.10.22(화)
 
 # 🧑‍🤝‍🧑 개발자 소개
 ---
@@ -35,7 +35,10 @@ Web Scraping 을 활용하여 "데이터 직무 채용공고 통합 서비스"�
 ![4](https://github.com/user-attachments/assets/060ae000-5f0a-44a0-8d0f-a60e64127787)
 
 
-# django-myapp 프로젝트 환경 설정
+https://github.com/user-attachments/assets/ad1f278d-de24-4dd8-b5cc-4418462cd6e1
+
+
+# ⚙️ django-myapp 프로젝트 환경 설정
 ---
 ### 1. 프로젝트 클론하기
 ```
@@ -82,7 +85,7 @@ $ python manage.py runserver --noreload
 ![image](https://github.com/user-attachments/assets/e2c132de-a736-4622-add3-7a9c2bc5c073)
 
 
-# 최종 결과물 링크
+# 🔗 최종 결과물 링크
 ---
-[결과물 소개 문서] : https://xn--2--i41iy10c9op.my.canva.site/
+[결과물 소개 문서] : https://xn--2--i41iy10c9op.my.canva.site/ <br>
 [프로젝트 보고서] : https://www.notion.so/11d6e9180a968129aebee7f824959f69
